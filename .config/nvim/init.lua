@@ -151,6 +151,8 @@ vim.keymap.set(
 	{ noremap = true, silent = true, desc = "Paste over selection without erasing unnamed register" }
 )
 
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
 -- Enable break indent
 vim.opt.breakindent = true
 
@@ -978,6 +980,14 @@ require("lazy").setup({
     { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
     { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
   },
+	},
+
+	{
+		"stevearc/oil.nvim",
+		opts = {},
+		-- Optional dependencies
+		dependencies = { { "echasnovski/mini.icons", opts = {} } },
+		-- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
 	},
 
 	{
