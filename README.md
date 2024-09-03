@@ -4,7 +4,8 @@
 - fzf
 - ble.sh
 - starship
-- nvim
+- neovim
 - wezterm
 - tmux
 - git
+- iosevka (fonts-iosevka)
