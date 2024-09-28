@@ -130,6 +130,9 @@ function tat {
   fi
 }
 
+export PATH=$HOME/.nami/bin:$PATH
 eval "$(zoxide init bash)"
 eval "$(starship init bash)"
+eval "$(~/.local/bin/mise activate bash)"
 source ~/.config/ble.sh
+export PATH=$HOME/.nami/bin:$PATH
