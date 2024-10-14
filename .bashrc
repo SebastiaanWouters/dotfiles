@@ -130,9 +130,13 @@ function tat {
   fi
 }
 
-export PATH=$HOME/.nami/bin:$PATH
+
+mcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+export PATH=$HOME/.config/emacs/bin:$PATH
 eval "$(zoxide init bash)"
 eval "$(starship init bash)"
 eval "$(~/.local/bin/mise activate bash)"
 source ~/.config/ble.sh
-export PATH=$HOME/.nami/bin:$PATH
