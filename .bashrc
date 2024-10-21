@@ -130,6 +130,9 @@ function tat {
   fi
 }
 
+nuxt4-init() {
+    deno run -A npm:nuxi init -t v4-compat "$1"
+}
 
 mcd() {
     mkdir -p "$1" && cd "$1"
@@ -139,4 +142,4 @@ export PATH=$HOME/.config/emacs/bin:$PATH
 eval "$(zoxide init bash)"
 eval "$(starship init bash)"
 eval "$(~/.local/bin/mise activate bash)"
-source ~/.config/ble.sh
+source ~/.local/share/blesh/ble.sh
