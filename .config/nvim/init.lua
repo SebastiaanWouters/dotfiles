@@ -122,6 +122,7 @@ vim.keymap.set("n", "<leader>cl", "<cmd>Telescope neoclip initial_mode=normal<CR
 
 -- greatest remap ever
 vim.keymap.set("v", "<leader>p", [["_dP]])
+vim.keymap.set("n", "<leader>p", [["+p]])
 
 -- next greatest remap ever : asbjornHaland
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
@@ -681,7 +682,7 @@ require("lazy").setup({
 				-- But for many setups, the LSP (`ts_ls`) will work just fine
 				-- ts_ls = {},
 				--
-				tsserver = {
+				ts_ls = {
 					on_attach = on_attach_tsserver,
 					init_options = {
 						plugins = {
