@@ -51,6 +51,9 @@
           - xclip
           - stow
           - tmux
+          - btop
+          - net-tools
+          - i2c-tools
           - apt-transport-https
           - ca-certificates
           - gnupg

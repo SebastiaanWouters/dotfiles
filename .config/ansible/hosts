@@ -1,3 +1,6 @@
 [local]
 localhost ansible_connection=local
 
+[beast]
+192.168.1.50
+
