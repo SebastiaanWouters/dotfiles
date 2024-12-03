@@ -1,0 +1,278 @@
+---
+- name: Ensure user 'sebas' exists with sudo privileges and password hash
+  hosts: all  # Use all hosts defined in the inventory file
+  become: yes
+  vars:
+    user_name: "sebas"
+    user_password_hash: "$6$bd4xED10Is/h84qB$I8r3aIssAAop1sqWBka8YNJ7y.5MmEuy7nj12bVAuDOnoShNr9nUDFW7fLIjiUGynV.ujsJHctiYwkhRhVsXa/"
+
+  tasks:
+    - name: Ensure the user exists
+      user:
+        name: "{{ user_name }}"
+        password: "{{ user_password_hash }}"
+        state: present
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Add user to sudo group
+      user:
+        name: "{{ user_name }}"  # Replace with the same username
+        groups: sudo  # On Debian/Ubuntu; for CentOS/RHEL, use 'wheel'
+        append: yes
+
+    - name: Allow passwordless sudo for the user (Debian/Ubuntu)
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^{{ user_name }}'
+        line: '{{ user_name }} ALL=(ALL) NOPASSWD:ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Update the apt cache (for Debian/Ubuntu systems)
+      become: yes
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600  # Cache validity for 1 hour, avoid repeated updates
+
+    - name: Upgrade all installed packages (Debian/Ubuntu)
+      become: yes
+      apt:
+        upgrade: dist
+
+    - name: Install base packages
+      become: yes
+      package:
+        name:
+          - git
+          - curl
+          - wget
+          - vim
+          - xclip
+          - stow
+          - tmux
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - lsb-release
+          - autoconf
+          - bison
+          - build-essential
+          - gettext
+          - libgd-dev
+          - libcurl4-openssl-dev
+          - libedit-dev
+          - libicu-dev
+          - libjpeg-dev
+          - libmysqlclient-dev
+          - libonig-dev
+          - libpng-dev
+          - libpq-dev
+          - libreadline-dev
+          - libsqlite3-dev
+          - libssl-dev
+          - libxml2-dev
+          - libzip-dev
+          - openssl
+          - pkg-config
+          - re2c
+          - zlib1g-dev
+          - fonts-jetbrains-mono
+        state: present
+
+    - name: Create directory for Docker GPG keyring (Debian/Ubuntu)
+      become: yes
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Add Docker's official GPG key (Debian/Ubuntu)
+      become: yes
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Add Docker's official APT repository (Debian/Ubuntu)
+      become: yes
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+        | tee /etc/apt/sources.list.d/docker.list > /dev/null
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Update apt cache again (Debian/Ubuntu after adding Docker repo)
+      become: yes
+      apt:
+        update_cache: yes
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Install Docker CE and related components (Debian/Ubuntu)
+      become: yes
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Start Docker service (Debian/Ubuntu and RedHat/CentOS)
+      become: yes
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Verify Docker Compose installation
+      become: yes
+      command: docker compose --version
+
+    - name: Install Mise using curl
+      become: yes
+      shell: |
+        curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+
+    # Mise Setup - Verify Installation
+    - name: Check Mise installation
+      become: yes
+      command: "mise --version"
+      register: mise_version
+      failed_when: mise_version.rc != 0
+      changed_when: false
+
+    - name: Add Mise activation to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(/usr/local/bin/mise activate bash)"'
+        state: present
+
+    - name: Clone fzf repository
+      git:
+        repo: 'https://github.com/junegunn/fzf.git'
+        dest: '/home/{{ user_name }}/.fzf'
+        depth: 1
+
+    - name: Run fzf installer script
+      command: '~/.fzf/install'
+      become: yes  # If you need to run the installer as a superuser (adjust as needed)
+      environment:
+        HOME: "/home/{{ user_name }}"  # To ensure the correct home directory is used
+
+    - name: Install starship shell
+      become: yes
+      shell: |
+        curl -sS https://starship.rs/install.sh | sh -s -- --force
+
+    - name: Add Starship activation to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(starship init bash)"'
+        state: present
+
+    - name: add wezterm key
+      become: yes
+      shell: |
+        curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /etc/apt/keyrings/wezterm-fury.gpg
+
+    - name: add wezterm repo
+      become: yes
+      shell: |
+        echo 'deb [signed-by=/etc/apt/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+
+    - name: Update apt cache again (Debian/Ubuntu after adding Wezterm repo)
+      become: yes
+      apt:
+        update_cache: yes
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Install wezterm
+      become: yes
+      apt:
+        name:
+          - wezterm
+        state: present
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+    - name: Update XKBOPTIONS in /etc/default/keyboard
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/default/keyboard
+        regexp: '^XKBOPTIONS=".*"$'
+        line: 'XKBOPTIONS="caps:swapescape"'
+        backup: yes  # Optionally create a backup of the file before making changes
+
+    - name: Ensure the wezterm configuration directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user_name }}/.config/wezterm"
+        state: directory
+        mode: '0755'
+
+    - name: Ensure wezterm configuration file is present with correct content
+      ansible.builtin.copy:
+        dest: "/home/{{ user_name }}/.config/wezterm/wezterm.lua"
+        content: |
+          -- Pull in the wezterm API
+          local wezterm = require 'wezterm'
+
+          -- This will hold the configuration.
+          local config = wezterm.config_builder()
+
+          config.enable_wayland = false
+          config.front_end = 'WebGpu'
+
+          return config
+        mode: '0644'
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Install tailscale
+      become: yes
+      shell: |
+        curl -fsSL https://tailscale.com/install.sh | sh
+
+    - name: Create Code directory 
+      become: yes
+      file:
+        path: /home/{{ user_name }}/Code
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Ensure ssh-agent is running
+      shell: |
+        if ! pgrep -u {{ user_name }} ssh-agent > /dev/null; then
+          eval $(ssh-agent -s)
+        fi
+      become: true
+      become_user: "{{ user_name }}"
+      register: ssh_agent_result
+      environment:
+        HOME: "/home/{{ user_name }}"
+      changed_when: false
+
+    - name: Generate SSH key using ssh-keygen
+      command: "ssh-keygen -t rsa -b 2048 -f /home/{{ user_name }}/.ssh/id_rsa -N ''"
+      args:
+        creates: "/home/{{ user_name }}/.ssh/id_rsa"
+      become: true
+      become_user: "{{ user_name }}"
+      register: ssh_keygen_result
+      environment:
+        SSH_AUTH_SOCK: "{{ lookup('env', 'SSH_AUTH_SOCK') }}"
+
+    - name: Add SSH key to SSH agent
+      command: "ssh-add /home/{{ user_name }}/.ssh/id_rsa"
+      when: ssh_keygen_result.changed
+      become: true
+      become_user: "{{ user_name }}"
+      environment:
+        SSH_AUTH_SOCK: "{{ lookup('env', 'SSH_AUTH_SOCK') }}"
+
