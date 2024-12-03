@@ -217,24 +217,6 @@
         state: directory
         mode: '0755'
 
-    - name: Ensure wezterm configuration file is present with correct content
-      ansible.builtin.copy:
-        dest: "/home/{{ user_name }}/.config/wezterm/wezterm.lua"
-        content: |
-          -- Pull in the wezterm API
-          local wezterm = require 'wezterm'
-
-          -- This will hold the configuration.
-          local config = wezterm.config_builder()
-
-          config.enable_wayland = false
-          config.front_end = 'WebGpu'
-
-          return config
-        mode: '0644'
-        owner: "{{ user_name }}"
-        group: "{{ user_name }}"
-
     - name: Install tailscale
       become: yes
       shell: |
