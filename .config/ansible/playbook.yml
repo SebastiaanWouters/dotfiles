@@ -52,6 +52,7 @@
           - stow
           - ripgrep
           - fd-find
+          - neovim
           - tmux
           - btop
           - net-tools
@@ -279,4 +280,38 @@
         create: yes  # Creates the file if it does not exist
       tags:
         - test
+
+
+    - name: Install Neovim
+      become: yes
+      tags:
+        - neovim
+      block:
+        - name: Download the latest Neovim release tarball
+          get_url:
+            url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+            dest: /tmp/nvim-linux64.tar.gz
+
+        - name: Remove the existing Neovim directory
+          file:
+            path: /opt/nvim
+            state: absent
+
+        - name: Extract Neovim tarball to /opt
+          unarchive:
+            src: /tmp/nvim-linux64.tar.gz
+            dest: /opt
+            remote_src: yes
+
+        - name: Add Neovim to the PATH in shell config
+          lineinfile:
+            path: "/home/{{ user_name }}/.bashrc"  # or use .zshrc if needed
+            line: 'export PATH="$PATH:/opt/nvim-linux64/bin"'
+            create: yes
+            state: present
+
+        - name: Source the .bashrc to update PATH for the current session
+          shell: '. /home/{{ user_name }}/.bashrc'
+          when: ansible_user_shell == "/bin/bash"  # Optional, condition to only source bashrc for bash users
+          become: false
 
