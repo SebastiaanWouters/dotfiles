@@ -1,28 +1,32 @@
 -- Pull in the wezterm API
-local wezterm = require("wezterm")
+local wezterm = require 'wezterm'
 
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
--- This is where you actually apply your config choices
+config.enable_wayland = false
+config.front_end = 'WebGpu'
 
--- For example, changing the color scheme:
 config.color_scheme = "Catppuccin Mocha"
 
 config.hide_tab_bar_if_only_one_tab = true
 
 config.font = wezterm.font_with_fallback({
-	"Iosevka",
 	"Jetbrains Mono",
 })
 config.font_size = 13
 
 config.window_padding = {
-	left = 2,
-	right = 2,
-	top = 0,
-	bottom = 0,
+	left = 4,
+	right = 4,
+	top = 4,
+	bottom = 4,
 }
 
--- and finally, return the configuration to wezterm
 return config
+
+
+
+
+
+
