@@ -216,6 +216,14 @@
         path: "/home/{{ user_name }}/.config/wezterm"
         state: directory
         mode: '0755'
+        owner: "{{ user_name }}"
+            
+    - name: Ensure the tmux configuration directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user_name }}/.config/tmux"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
 
     - name: Install tailscale
       become: yes
@@ -261,20 +269,12 @@
       environment:
         SSH_AUTH_SOCK: "{{ lookup('env', 'SSH_AUTH_SOCK') }}"
 
-    - name: Add tat function to .bashrc
-      ansible.builtin.blockinfile:
-        path: "~/.bashrc"
-        block: |
-          function tat {
-            name=$(basename `pwd` | sed -e 's/\.//g')
-            if tmux ls 2>&1 | grep "$name"; then
-              tmux attach -t "$name"
-            elif [ -f .envrc ]; then
-              direnv exec / tmux new-session -s "$name"
-            else
-              tmux new-session -s "$name"
-            fi
-          }
-        insertafter: EOF
-        create: yes
-        validate: 'grep -q "function tat" ~/.bashrc'
+    - name: Add line to file if it doesn't exist
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: "[ -f ~/.bash_config ] && source ~/.bash_config"
+        state: present
+        create: yes  # Creates the file if it does not exist
+      tags:
+        - test
+
