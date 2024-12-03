@@ -1,0 +1,23 @@
+{
+    "workbench.sideBar.location": "right",
+    "workbench.editor.showTabs": "none",
+    "window.menuBarVisibility": "toggle",
+    "keyboard.dispatch": "keyCode",
+    "workbench.activityBar.location": "hidden",
+    "editor.minimap.enabled": false,
+    "vim.easymotion": true,
+    "vim.handleKeys": {
+        "<C-n>": false,
+        "<C-f>": false,
+        "<C-c>": false,
+        "<C-v>": false,
+        "<C-s>": false,
+        "<C-z>": false,
+        "<C-y>": false,
+        "<C-p>": false
+    },
+    "editor.fontSize": 14,
+    "terminal.integrated.fontSize": 14,
+    "editor.fontFamily": "'Jetbrains Mono', 'Droid Sans Mono', 'monospace', monospace",
+    "window.zoomLevel": 1
+}
