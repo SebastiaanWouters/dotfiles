@@ -162,7 +162,7 @@
         depth: 1
 
     - name: Run fzf installer script
-      command: '~/.fzf/install'
+      command: '/home/{{ user_name }}/.fzf/install --all'
       become: yes  # If you need to run the installer as a superuser (adjust as needed)
       environment:
         HOME: "/home/{{ user_name }}"  # To ensure the correct home directory is used
