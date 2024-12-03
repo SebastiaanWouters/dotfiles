@@ -50,6 +50,8 @@
           - vim
           - xclip
           - stow
+          - ripgrep
+          - fd-find
           - tmux
           - btop
           - net-tools
