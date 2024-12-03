@@ -315,3 +315,37 @@
           when: ansible_user_shell == "/bin/bash"  # Optional, condition to only source bashrc for bash users
           become: false
 
+
+    - name: Install LazyGit
+      become: yes
+      tags:
+        - lazygit
+      block:
+        - name: Get the latest LazyGit version
+          uri:
+            url: "https://api.github.com/repos/jesseduffield/lazygit/releases/latest"
+            method: GET
+            return_content: yes
+          register: lazygit_release
+
+        - name: Extract LazyGit version from the release data
+          set_fact:
+            lazygit_version: "{{ lazygit_release.json.tag_name | regex_replace('^v', '') }}"
+
+        - name: Download LazyGit tarball
+          get_url:
+            url: "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz"
+            dest: "/tmp/lazygit.tar.gz"
+
+        - name: Extract LazyGit binary from the tarball
+          unarchive:
+            src: "/tmp/lazygit.tar.gz"
+            dest: "/tmp"
+            extra_opts: ["--strip-components=1"]
+            remote_src: yes
+
+        - name: Install LazyGit to /usr/local/bin
+          command:
+            cmd: "install /tmp/lazygit /usr/local/bin/lazygit"
+            creates: /usr/local/bin/lazygit
+
