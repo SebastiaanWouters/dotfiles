@@ -4,7 +4,7 @@ local wezterm = require 'wezterm'
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
-config.enable_wayland = false
+config.enable_wayland = true
 config.front_end = 'WebGpu'
 
 config.color_scheme = "Catppuccin Mocha"
