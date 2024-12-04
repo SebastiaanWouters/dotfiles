@@ -52,8 +52,9 @@
           - stow
           - ripgrep
           - fd-find
-          - neovim
           - tmux
+          - python3-pip
+          - pipx
           - btop
           - net-tools
           - i2c-tools
