@@ -341,12 +341,11 @@
         - name: Extract LazyGit binary from the tarball
           unarchive:
             src: "/tmp/lazygit.tar.gz"
-            dest: "/tmp"
-            extra_opts: ["--strip-components=1"]
+            dest: "/tmp/"
             remote_src: yes
 
         - name: Install LazyGit to /usr/local/bin
           command:
-            cmd: "install /tmp/lazygit /usr/local/bin/lazygit"
+            cmd: "mv /tmp/lazygit /usr/local/bin/lazygit"
             creates: /usr/local/bin/lazygit
 
