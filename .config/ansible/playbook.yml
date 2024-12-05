@@ -139,6 +139,13 @@
       become: yes
       command: docker compose --version
 
+    - name: Add dc alias to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'alias dc="docker compose"'
+        state: present
+
     - name: Install Mise using curl
       become: yes
       shell: |
@@ -366,11 +373,5 @@
           lineinfile:
             path: "/home/{{ user_name }}/.bashrc"
             line: 'eval "$(zoxide init bash)"'
-            create: yes
-            state: present
-        - name: setup alias for zoxide (z)
-          lineinfile:
-            path: "/home/{{ user_name }}/.bashrc"
-            line: 'alias z="zoxide"'
             create: yes
             state: present
