@@ -1,0 +1,5 @@
+[user]
+	email = sebastiaanwouters@tutanota.com
+	name = SebastiaanWouters
+[core]
+	excludesFile = ~/.config/git/.gitignore
