@@ -349,3 +349,28 @@
             cmd: "mv /tmp/lazygit /usr/local/bin/lazygit"
             creates: /usr/local/bin/lazygit
 
+    - name: Install zoxide with shell integration
+      become: yes
+      tags:
+        - zoxide
+      block:
+        - name: Check if zoxide is already installed
+          stat:
+            path: /usr/local/bin/zoxide
+          register: zoxide_stat
+        - name: Intall via curl
+          shell: |
+            curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh -s -- --bin-dir=/usr/local/bin
+          when: not zoxide_stat.stat.exists
+        - name: setup bash integration
+          lineinfile:
+            path: "/home/{{ user_name }}/.bashrc"
+            line: 'eval "$(zoxide init bash)"'
+            create: yes
+            state: present
+        - name: setup alias for zoxide (z)
+          lineinfile:
+            path: "/home/{{ user_name }}/.bashrc"
+            line: 'alias z="zoxide"'
+            create: yes
+            state: present
