@@ -3,3 +3,4 @@
 -- Add any additional keymaps here
 
 vim.keymap.set("i", "jj", "<ESC>", { silent = true })
+vim.keymap.set("n", "<leader>bs", "<Cmd>BufferLinePick<CR>", { silent = true, desc = "Quick Buffer Picking" })
