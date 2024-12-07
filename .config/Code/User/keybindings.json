@@ -1,0 +1,13 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+      "key": "ctrl+m ctrl+w",
+      "command": "editor.emmet.action.wrapWithAbbreviation",
+      "when": "editorTextFocus && !editorReadonly"
+    },
+    {
+      "key": "ctrl+m ctrl+c",
+      "command": "editor.emmet.action.updateTag",
+      "when": "editorTextFocus && !editorReadonly"
+    },
+  ]

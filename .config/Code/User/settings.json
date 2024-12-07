@@ -1,23 +1,60 @@
 {
+    "workbench.colorTheme": "Tokyo Night",
+    "windsurf.autocompleteSpeed": "fast",
     "workbench.sideBar.location": "right",
-    "workbench.editor.showTabs": "none",
-    "window.menuBarVisibility": "toggle",
     "keyboard.dispatch": "keyCode",
-    "workbench.activityBar.location": "hidden",
-    "editor.minimap.enabled": false,
-    "vim.easymotion": true,
-    "vim.handleKeys": {
-        "<C-n>": false,
-        "<C-f>": false,
-        "<C-c>": false,
-        "<C-v>": false,
-        "<C-s>": false,
-        "<C-z>": false,
-        "<C-y>": false,
-        "<C-p>": false
-    },
     "editor.fontSize": 14,
-    "terminal.integrated.fontSize": 14,
-    "editor.fontFamily": "'Jetbrains Mono', 'Droid Sans Mono', 'monospace', monospace",
-    "window.zoomLevel": 1
+    "editor.lineHeight": 1.6,
+    "editor.fontFamily": "JetBrains Mono",
+    "window.zoomLevel": 0.9,
+
+    "vim.easymotion": true,
+    "vim.sneak": true,
+    "vim.surround": true,
+    "vim.incsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.insertModeKeyBindings": [
+        {
+        "before": ["j", "j"],
+        "after": ["<Esc>"]
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+        "before": ["<leader>", "d"],
+        "after": ["d", "d"]
+        },
+        {
+        "before": ["<C-n>"],
+        "commands": [":nohl"]
+        },
+        {
+        "before": ["K"],
+        "commands": ["editor.action.showHover"],
+        "silent": true
+        }
+    ],
+    "vim.leader": "<space>",
+    "vim.handleKeys": {
+        "<C-s>": false,
+        "<C-a>": false,
+        "<C-f>": false,
+        "<C-y>": false,
+        "<C-z>": false,
+        "<C-b>": false,
+        "<C-t>": false,
+        "<C-j>": false,
+        "<C-p>": false,
+        "<C-w>": false,
+        "<C-m>": false
+    },
+
+    "extensions.experimental.affinity": {
+        "vscodevim.vim": 1
+    },
+    "workbench.editor.showTabs": "none",
+    "editor.minimap.enabled": false,
+    "window.menuBarVisibility": "compact",
 }
