@@ -25,4 +25,6 @@ config.window_padding = {
 
 config.window_close_confirmation = 'NeverPrompt'
 
+config.default_prog = { '/usr/bin/bash', '-i' }
+
 return config

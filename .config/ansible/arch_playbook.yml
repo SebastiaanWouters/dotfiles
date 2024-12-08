@@ -33,7 +33,6 @@
       become: yes
       pacman:
         update_cache: yes
-        cache_valid_time: 3600  # Cache validity for 1 hour
 
     - name: Upgrade all installed packages (Arch)
       become: yes
@@ -54,7 +53,6 @@
           - fd
           - tmux
           - python-pip
-          - pipx
           - btop
           - net-tools
           - i2c-tools
@@ -62,23 +60,10 @@
           - gnupg
           - base-devel  # Includes packages like autoconf, bison, etc.
           - gettext
-          - libgd
-          - libcurl
           - libedit
-          - libicu
-          - libjpeg
-          - libmysqlclient
-          - libpng
-          - libpq
-          - libreadline
-          - libsqlite
-          - libssl
-          - libxml2
-          - libzip
           - openssl
+          - openssh
           - pkg-config
-          - re2c
-          - zlib
           - ttf-jetbrains-mono
           - docker
           - docker-compose
@@ -87,6 +72,9 @@
           - zoxide  # Added Zoxide to the initial package list
           - lazygit  # Added LazyGit to the initial package list
           - wezterm  # Added WezTerm to the initial package list
+          - tailscale
+          - yay
+          - interception-caps2esc
         state: present
 
     - name: Start Docker service (Arch)
@@ -127,6 +115,13 @@
         line: 'eval "$(/usr/local/bin/mise activate bash)"'
         state: present
 
+    - name: Add Mise activation to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(fzf --bash)"'
+        state: present
+
     - name: Install starship shell
       become: yes
       shell: |
@@ -138,14 +133,6 @@
         path: "/home/{{ user_name }}/.bashrc"
         line: 'eval "$(starship init bash)"'
         state: present
-
-    - name: Update XKBOPTIONS in /etc/default/keyboard
-      become: yes
-      ansible.builtin.lineinfile:
-        path: /etc/default/keyboard
-        regexp: '^XKBOPTIONS=".*"$'
-        line: 'XKBOPTIONS="caps:swapescape"'
-        backup: yes  # Optionally create a backup of the file before making changes
 
     - name: Ensure the wezterm configuration directory exists
       ansible.builtin.file:
@@ -161,11 +148,6 @@
         mode: '0755'
         owner: "{{ user_name }}"
 
-    - name: Install tailscale
-      become: yes
-      shell: |
-        curl -fsSL https://tailscale.com/install.sh | sh
-
     - name: Create Code directory 
       become: yes
       file:
@@ -178,7 +160,7 @@
     - name: Ensure ssh-agent is running
       shell: |
         if ! pgrep -u {{ user_name }} ssh-agent > /dev/null; then
-          eval $(ssh-agent -s)
+          bash -c eval $(ssh-agent -s)
         fi
       become: true
       become_user: "{{ user_name }}"
@@ -239,3 +221,36 @@
           tags:
             - fix-audio
 
+
+        - name: Configure system services and udevmon
+          become: true
+          block:
+            - name: Ensure bluetooth service is started and enabled
+              ansible.builtin.systemd:
+                name: bluetooth
+                state: started
+                enabled: true
+
+            - name: Ensure sshd service is started and enabled
+              ansible.builtin.systemd:
+                name: sshd
+                state: started
+                enabled: true
+
+            - name: Ensure udevmon service is enabled and started
+              ansible.builtin.systemd:
+                name: udevmon
+                state: started
+                enabled: true
+
+            - name: Create udevmon.yaml configuration file
+              ansible.builtin.copy:
+                dest: /etc/interception/udevmon.yaml
+                content: |
+                  - JOB: intercept -g $DEVNODE | caps2esc -m 0 | uinput -d $DEVNODE
+                    DEVICE:
+                      EVENTS:
+                        EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
+                owner: root
+                group: root
+                mode: '0644'
