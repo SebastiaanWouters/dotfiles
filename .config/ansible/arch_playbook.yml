@@ -54,6 +54,9 @@
           - tmux
           - python-pip
           - btop
+          - re2c
+          - gd
+          - postgresql-libs
           - net-tools
           - i2c-tools
           - ca-certificates

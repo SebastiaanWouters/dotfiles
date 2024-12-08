@@ -1,46 +1,47 @@
 {
-    "workbench.sideBar.location": "right",
-    "workbench.editor.showTabs": "none",
-    "window.menuBarVisibility": "toggle",
-    "vim.smartRelativeLine": true,
-    "keyboard.dispatch": "keyCode",
-    "editor.cursorSmoothCaretAnimation": "on",
-    "editor.cursorBlinking": "phase",
-    "workbench.activityBar.location": "hidden",
-    "editor.minimap.enabled": false,
-    "vim.easymotion": true,
-    "vim.handleKeys": {
-        "<C-n>": false,
-        "<C-f>": false,
-        "<C-c>": false,
-        "<C-v>": false,
-        "<C-s>": false,
-        "<C-z>": false,
-        "<C-y>": false,
-        "<C-p>": false,
-        "<C-b>": false,
-        "<C-x>": false
-    },
-    "vim.normalModeKeyBindingsNonRecursive": [
+  "workbench.sideBar.location": "right",
+  "workbench.editor.showTabs": "none",
+  "vim.smartRelativeLine": true,
+  "keyboard.dispatch": "keyCode",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorBlinking": "phase",
+  "workbench.activityBar.location": "hidden",
+  "editor.minimap.enabled": false,
+  "vim.easymotion": true,
+  "vim.handleKeys": {
+    "<C-n>": false,
+    "<C-f>": false,
+    "<C-c>": false,
+    "<C-v>": false,
+    "<C-s>": false,
+    "<C-z>": false,
+    "<C-y>": false,
+    "<C-p>": false,
+    "<C-b>": false,
+    "<C-x>": false
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": [
+        "K"
+      ],
+      "commands": [
         {
-            "before": ["K"],
-            "commands": [
-                {
-                    "command": "editor.action.showHover"
-                }
-            ]
-        },
-    ],
-    "window.commandCenter": true,
-    "editor.fontSize": 14,
-    "terminal.integrated.fontSize": 14,
-    "editor.fontFamily": "'Jetbrains Mono', 'Droid Sans Mono', 'monospace', monospace",
-    "window.zoomLevel": 0.9,
-    "workbench.colorTheme": "Catppuccin Mocha",
-    "workbench.iconTheme": "catppuccin-mocha",
-    "[php]": {
-        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+          "command": "editor.action.showHover"
+        }
+      ]
     },
-    "cursor.cpp.enablePartialAccepts": true,
-    "supermaven.allowGitignore": true,
+  ],
+  "window.commandCenter": 1,
+  "editor.fontSize": 14,
+  "terminal.integrated.fontSize": 14,
+  "editor.fontFamily": "'Jetbrains Mono', 'Droid Sans Mono', 'monospace', monospace",
+  "window.zoomLevel": 0.9,
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+  "cursor.cpp.enablePartialAccepts": true,
+  "supermaven.allowGitignore": true,
 }
