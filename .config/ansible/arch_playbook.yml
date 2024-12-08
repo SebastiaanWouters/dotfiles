@@ -1,0 +1,216 @@
+---
+- name: Ensure user 'sebas' exists with sudo privileges and password hash
+  hosts: all  # Use all hosts defined in the inventory file
+  become: yes
+  vars:
+    user_name: "sebas"
+    user_password_hash: "$6$bd4xED10Is/h84qB$I8r3aIssAAop1sqWBka8YNJ7y.5MmEuy7nj12bVAuDOnoShNr9nUDFW7fLIjiUGynV.ujsJHctiYwkhRhVsXa/"
+
+  tasks:
+    - name: Ensure the user exists
+      user:
+        name: "{{ user_name }}"
+        password: "{{ user_password_hash }}"
+        state: present
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Add user to sudo group (wheel for Arch)
+      user:
+        name: "{{ user_name }}"
+        groups: wheel  # For Arch, use 'wheel' instead of 'sudo'
+        append: yes
+
+    - name: Allow passwordless sudo for the user (Arch)
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^{{ user_name }}'
+        line: '{{ user_name }} ALL=(ALL) NOPASSWD:ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Update the pacman package database
+      become: yes
+      pacman:
+        update_cache: yes
+        cache_valid_time: 3600  # Cache validity for 1 hour
+
+    - name: Upgrade all installed packages (Arch)
+      become: yes
+      pacman:
+        upgrade: yes
+
+    - name: Install base packages
+      become: yes
+      pacman:
+        name:
+          - git
+          - curl
+          - wget
+          - vim
+          - xclip
+          - stow
+          - ripgrep
+          - fd
+          - tmux
+          - python-pip
+          - pipx
+          - btop
+          - net-tools
+          - i2c-tools
+          - ca-certificates
+          - gnupg
+          - base-devel  # Includes packages like autoconf, bison, etc.
+          - gettext
+          - libgd
+          - libcurl
+          - libedit
+          - libicu
+          - libjpeg
+          - libmysqlclient
+          - libpng
+          - libpq
+          - libreadline
+          - libsqlite
+          - libssl
+          - libxml2
+          - libzip
+          - openssl
+          - pkg-config
+          - re2c
+          - zlib
+          - ttf-jetbrains-mono
+          - docker
+          - docker-compose
+          - fzf  # Added fzf to the initial package list
+          - neovim  # Added Neovim to the initial package list
+          - zoxide  # Added Zoxide to the initial package list
+          - lazygit  # Added LazyGit to the initial package list
+          - wezterm  # Added WezTerm to the initial package list
+        state: present
+
+    - name: Start Docker service (Arch)
+      become: yes
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Verify Docker Compose installation
+      become: yes
+      command: docker-compose --version
+
+    - name: Add dc alias to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'alias dc="docker-compose"'
+        state: present
+
+    - name: Install Mise using curl
+      become: yes
+      shell: |
+        curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+
+    # Mise Setup - Verify Installation
+    - name: Check Mise installation
+      become: yes
+      command: "mise --version"
+      register: mise_version
+      failed_when: mise_version.rc != 0
+      changed_when: false
+
+    - name: Add Mise activation to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(/usr/local/bin/mise activate bash)"'
+        state: present
+
+    - name: Install starship shell
+      become: yes
+      shell: |
+        curl -sS https://starship.rs/install.sh | sh -s -- --force
+
+    - name: Add Starship activation to bashrc
+      become: yes
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(starship init bash)"'
+        state: present
+
+    - name: Update XKBOPTIONS in /etc/default/keyboard
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/default/keyboard
+        regexp: '^XKBOPTIONS=".*"$'
+        line: 'XKBOPTIONS="caps:swapescape"'
+        backup: yes  # Optionally create a backup of the file before making changes
+
+    - name: Ensure the wezterm configuration directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user_name }}/.config/wezterm"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
+
+    - name: Ensure the tmux configuration directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user_name }}/.config/tmux"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
+
+    - name: Install tailscale
+      become: yes
+      shell: |
+        curl -fsSL https://tailscale.com/install.sh | sh
+
+    - name: Create Code directory 
+      become: yes
+      file:
+        path: /home/{{ user_name }}/Code
+        state: directory
+        mode: '0755'
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+
+    - name: Ensure ssh-agent is running
+      shell: |
+        if ! pgrep -u {{ user_name }} ssh-agent > /dev/null; then
+          eval $(ssh-agent -s)
+        fi
+      become: true
+      become_user: "{{ user_name }}"
+      register: ssh_agent_result
+      environment:
+        HOME: "/home/{{ user_name }}"
+      changed_when: false
+
+    - name: Generate SSH key using ssh-keygen
+      command: "ssh-keygen -t rsa -b 2048 -f /home/{{ user_name }}/.ssh/id_rsa -N ''"
+      args:
+        creates: "/home/{{ user_name }}/.ssh/id_rsa"
+      become: true
+      become_user: "{{ user_name }}"
+      register: ssh_keygen_result
+      environment:
+        SSH_AUTH_SOCK: "{{ lookup('env', 'SSH_AUTH_SOCK') }}"
+
+    - name: Add SSH key to SSH agent
+      command: "ssh-add /home/{{ user_name }}/.ssh/id_rsa"
+      when: ssh_keygen_result.changed
+      become: true
+      become_user: "{{ user_name }}"
+      environment:
+        SSH_AUTH_SOCK: "{{ lookup('env', 'SSH_AUTH_SOCK') }}"
+
+    - name: Add line to file if it doesn't exist
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: "[ -f ~/.bash_config ] && source ~/.bash_config"
+        state: present
+        create: yes  # Creates the file if it does not exist
+      tags:
+        - test
+
