@@ -375,3 +375,28 @@
             line: 'eval "$(zoxide init bash)"'
             create: yes
             state: present
+
+    - name: Download, set up, fix-audio script
+      become: true
+      block:
+        - name: Download the fix-audio script
+          get_url:
+            url: https://bugzilla.kernel.org/attachment.cgi?id=304763
+            dest: /tmp/fix-audio
+            mode: '0644'
+          tags:
+            - fix-audio
+
+        - name: Make the fix-audio script executable
+          file:
+            path: /tmp/fix-audio
+            mode: '0755'
+          tags:
+            - fix-audio
+
+        - name: Move the fix-audio script to /usr/local/bim/fix-audio
+          command:
+            cmd: mv /tmp/fix-audio /usr/local/bin/
+            creates: /usr/local/bin/fix-audio
+          tags:
+            - fix-audio
