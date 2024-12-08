@@ -115,7 +115,14 @@
         line: 'eval "$(/usr/local/bin/mise activate bash)"'
         state: present
 
-    - name: Add Mise activation to bashrc
+    - name: setup zoxide bash integration
+      lineinfile:
+        path: "/home/{{ user_name }}/.bashrc"
+        line: 'eval "$(zoxide init bash)"'
+        create: yes
+        state: present
+
+    - name: Add fzf activation to bashrc
       become: yes
       lineinfile:
         path: "/home/{{ user_name }}/.bashrc"
