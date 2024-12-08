@@ -28,4 +28,8 @@
     "key": "ctrl+i",
     "command": "-supermaven.editWithSupermaven"
   },
+  {
+    "key": "ctrl+alt+,",
+    "command": "bookmarksExplorer.focus"
+  },
 ]
