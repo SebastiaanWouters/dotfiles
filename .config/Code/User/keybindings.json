@@ -1,13 +1,31 @@
 // Place your key bindings in this file to override the defaults
 [
-    {
-      "key": "ctrl+m ctrl+w",
-      "command": "editor.emmet.action.wrapWithAbbreviation",
-      "when": "editorTextFocus && !editorReadonly"
-    },
-    {
-      "key": "ctrl+m ctrl+c",
-      "command": "editor.emmet.action.updateTag",
-      "when": "editorTextFocus && !editorReadonly"
-    },
-  ]
+  {
+    "key": "ctrl+m ctrl+w",
+    "command": "editor.emmet.action.wrapWithAbbreviation",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+m ctrl+c",
+    "command": "editor.emmet.action.updateTag",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+y",
+    "command": "-composer.newchatfollowup"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-inlineChat.start",
+    "when": "editorFocus && inlineChatHasProvider && !editorReadonly"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-composer.startComposerPrompt",
+    "when": "composerIsEnabled"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-supermaven.editWithSupermaven"
+  },
+]
