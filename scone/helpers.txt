@@ -1,0 +1,36 @@
+## Dump Prod DB
+/usr/bin/mysqldump --result-file=$HOME/dumps/scone_prod-$(date +\%Y_\%m_\%d_\%H_\%M_\%S)-dump.sql --skip-triggers "scone_production" --user=scone_production --host=icts-db-gbwdb1.icts.kuleuven.be --port=3306 --no-tablespaces -p --ignore-table=scone_production.Route --skip-lock-tables --ignore-table=scone_production.cron_job --ignore-table=scone_production.cron_report --ignore-table=scone_production.DoctrineResultCache --ignore-table=scone_production.log__entries --ignore-table=scone_production.log__user_actions --ignore-table=scone_production.voucher --ignore-table=scone_production.voucher_backup
+
+## Dump Preview DB
+/usr/bin/mysqldump --result-file=$HOME/dumps/scone_prev-$(date +\%Y_\%m_\%d_\%H_\%M_\%S)-dump.sql --skip-triggers "scone_preview" --user=scone_preview --host=icts-db-gbwdb1.icts.kuleuven.be --port=3306 --no-tablespaces -p --ignore-table=scone_preview.Route --skip-lock-tables --ignore-table=scone_preview.cron_job --ignore-table=scone_preview.cron_report --ignore-table=scone_preview.DoctrineResultCache --ignore-table=scone_preview.log__entries --ignore-table=scone_preview.log__user_actions --ignore-table=scone_preview.voucher --ignore-table=scone_preview.voucher_backup
+
+## Import DB
+mysql -u stagesol -pstagesol -h 127.0.0.1 stagesol < scone-dump.sql
+
+## Migrate 
+php bin/console form_builder:convert_old_scone_templates_with_submitted_forms_to_kul_form_adapter_internship_templates_for_internship xxxx
+
+## Kill Remote Dev
+ps aux | grep "RemoteDev" | awk '{print $2}' | xargs -r kill -9
+
+## Connect DB
+mysql -h icts-db-gbwdb1.icts.kuleuven.be -u scone_preview -p scone_preview
+
+## php_cs_fixer (active)
+bin/php-cs-fixer fix -v --cache-file=.php-cs-fixer-src.cache src/
+
+## php_cs_fixer (dry)
+bin/php-cs-fixer fix --cache-file=.php-cs-fixer-src.cache --dry-run -v src/
+
+## code_sniffer
+bin/phpcs --standard=phpcs.xml src/Kuleuven/ -v -s -p --parallel=8
+
+## cbf
+bin/phpcbf --standard=phpcs.xml src/Kuleuven/ -v -s -p --parallel=8
+
+## psalm
+bin/psalm --config=psalm.xml --no-cache
+
+## tests
+bin/phpunit --no-coverage -d memory_limit=8192M --testsuite stages_online_web_bundle,other_bundles
+
