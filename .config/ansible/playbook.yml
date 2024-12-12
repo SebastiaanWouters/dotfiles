@@ -253,7 +253,7 @@
     - name: Ensure ssh-agent is running
       shell: |
         if ! pgrep -u {{ user_name }} ssh-agent > /dev/null; then
-          eval $(ssh-agent -s)
+          eval "$(ssh-agent -s)"
         fi
       become: true
       become_user: "{{ user_name }}"
@@ -400,3 +400,15 @@
             creates: /usr/local/bin/fix-audio
           tags:
             - fix-audio
+    - name: Ensure necessary directories inside .config exist
+      tags:
+        - "config"
+      file:
+        path: "/home/{{ user_name }}/.config/{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - nvim
+        - wezterm
+        - tmux
+      become: true
