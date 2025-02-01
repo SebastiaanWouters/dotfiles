@@ -1,7 +1,7 @@
 ## README
 
 # OS PROGRAMS
-- ghostty / wezterm
+- ghostty
 - zen browser
 - cursor.sh
 - vscode
@@ -17,7 +17,8 @@
 - bat
 - git
 - vim
-- jetbrains mono
-- tmux / zellij
-- bat
 - fzf
+- curl
+
+# FONTS
+- jetbrains mono
