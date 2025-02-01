@@ -1,18 +1,23 @@
 ## README
 
-# REQUIRED TOOLS
-- fzf
-- ble.sh
-- starship
-- neovim
-- bat (batcat)
-- tmux
-- git
-- iosevka (fonts-iosevka)
+# OS PROGRAMS
+- ghostty / wezterm
+- zen browser
+- cursor.sh
+- vscode
 
-# BROWSER TOOLS
-- xbrowsersync
-- history autodelete (1 day)
-- cookie autodelete (whiteslist...)
+# BROWSER
+- bitwarden
 - ublock origin
 - i still don't care about cookies
+
+# SHELL PROGRAMS
+- starship
+- atuin
+- bat
+- git
+- vim
+- jetbrains mono
+- tmux / zellij
+- bat
+- fzf
