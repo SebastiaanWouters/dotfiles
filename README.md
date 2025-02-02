@@ -26,4 +26,4 @@
 - jetbrains mono
 
 # ALIASES
-dc - docker compose
+- dc <-> docker compose
