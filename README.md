@@ -6,6 +6,7 @@
 - cursor.sh
 - vscode
 - docker
+- gnome tweaks (caps2esc)
 
 # BROWSER
 - bitwarden
