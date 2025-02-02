@@ -5,13 +5,14 @@
 - zen browser
 - cursor.sh
 - vscode
+- docker
 
 # BROWSER
 - bitwarden
 - ublock origin
 - i still don't care about cookies
 
-# SHELL PROGRAMS
+# TERMINAL PROGRAMS
 - starship
 - atuin
 - bat
@@ -19,6 +20,7 @@
 - vim
 - fzf
 - curl
+- mise
 
 # FONTS
 - jetbrains mono
