@@ -24,3 +24,6 @@
 
 # FONTS
 - jetbrains mono
+
+# ALIASES
+dc - docker compose
